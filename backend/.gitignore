@@ -4,4 +4,4 @@ target/
 .idea/
 *.log
 .env
-backend\src\main\resources
+src/main/resources/application.yml

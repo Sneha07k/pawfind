@@ -7,6 +7,8 @@ import ResetPassword from './pages/auth/ResetPassword'
 import NgoProfileSetup from './pages/ngo/NgoProfileSetup'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import ProtectedRoute from './components/ProtectedRoute'
+import MyPets from './pages/ngo/MyPets'
+import PetForm from './pages/ngo/PetForm'
 
 function Home() {
   return (
@@ -34,6 +36,15 @@ export default function App() {
 
       <Route path="/admin" element={
         <ProtectedRoute allowedRoles={['ADMIN']}><AdminDashboard /></ProtectedRoute>
+      } />
+      <Route path="/ngo/pets" element={
+              <ProtectedRoute allowedRoles={['NGO']}><MyPets /></ProtectedRoute>
+      } />
+      <Route path="/ngo/pets/new" element={
+              <ProtectedRoute allowedRoles={['NGO']}><PetForm /></ProtectedRoute>
+      } />
+      <Route path="/ngo/pets/:id/edit" element={
+          <ProtectedRoute allowedRoles={['NGO']}><PetForm /></ProtectedRoute>
       } />
     </Routes>
   )

@@ -1,0 +1,58 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: pawfind-backend
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/pawfind?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:Fortknox123$}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:admin.snehak@gmail.com}
+    password: ${MAIL_PASSWORD:iode gktn szqi iqrl}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+admin:
+  email: ${ADMIN_EMAIL:admin.snehak@gmail.com}
+  password: ${ADMIN_PASSWORD:fortknox123$}
+
+jwt:
+  secret: ${JWT_SECRET:change-this-to-a-long-random-secret-key-in-production-min-256-bits}
+  expiration-ms: 86400000
+  refresh-expiration-ms: 604800000
+
+otp:
+  expiry-minutes: 5
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME:}
+  api-key: ${CLOUDINARY_API_KEY:}
+  api-secret: ${CLOUDINARY_API_SECRET:}
+
+cors:
+  allowed-origins: http://localhost:5173

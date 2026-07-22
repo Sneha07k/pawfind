@@ -11,6 +11,7 @@ import MyPets from './pages/ngo/MyPets'
 import PetForm from './pages/ngo/PetForm'
 import BrowsePets from "./pages/public/BrowsePets";
 import NearbyMap from "./pages/public/NearbyMap";
+import PetDetails from "./pages/public/PetDetails";
 
 function Home() {
   return (
@@ -38,6 +39,7 @@ export default function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/map" element={<NearbyMap />} />
+      <Route path="/pets/:id" element={<PetDetails />} />
 
       <Route
         path="/ngo/profile"

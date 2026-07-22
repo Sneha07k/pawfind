@@ -15,6 +15,12 @@ import com.pawfind.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import com.pawfind.entity.enums.Gender;
+import org.springframework.data.domain.Sort;
+import com.pawfind.dto.pet.NearbyPetResponse;
+import com.pawfind.entity.enums.PetStatus;
+import com.pawfind.util.GeoUtils;
+import java.util.Comparator;
 
 import java.util.List;
 
@@ -138,6 +144,33 @@ public class PetService {
             throw new IllegalStateException("You do not have permission to modify this pet");
         }
         return pet;
+    }
+
+    public List<PetResponse> searchPets(String species, String breed, Gender gender,
+            Integer minAge, Integer maxAge,
+            Boolean vaccinated, String location) {
+        var spec = PetSpecification.withFilters(species, breed, gender, minAge, maxAge, vaccinated, location);
+        return petRepository.findAll(spec, Sort.by(Sort.Direction.DESC, "createdAt"))
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    public List<NearbyPetResponse> findNearby(double lat, double lng, double radiusKm) {
+        return petRepository.findAll().stream()
+                .filter(p -> p.getStatus() == PetStatus.AVAILABLE)
+                .filter(p -> p.getLatitude() != null && p.getLongitude() != null)
+                .map(p -> {
+                    double distance = GeoUtils.distanceKm(lat, lng, p.getLatitude(), p.getLongitude());
+                    return new NearbyPetResponse(
+                            p.getId(), p.getName(), p.getSpecies(), p.getBreed(), p.getGender(),
+                            p.getLatitude(), p.getLongitude(),
+                            p.getImages().stream().map(i -> i.getImageUrl()).toList(),
+                            distance);
+                })
+                .filter(p -> p.getDistanceKm() <= radiusKm)
+                .sorted(Comparator.comparingDouble(NearbyPetResponse::getDistanceKm))
+                .toList();
     }
 
     private PetResponse toResponse(Pet pet) {

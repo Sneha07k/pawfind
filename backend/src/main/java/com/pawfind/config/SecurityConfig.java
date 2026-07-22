@@ -60,13 +60,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/ngo/nearby").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/pets/mine").hasRole("NGO")
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/pets/**").permitAll()
                         .requestMatchers("/api/pets/**").hasRole("NGO")
                         .requestMatchers("/api/ngo/**").hasRole("NGO")
-                        .anyRequest()
-                        .authenticated()
-                    )
+                        .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

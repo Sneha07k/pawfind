@@ -13,4 +13,14 @@ export const uploadPetImage = (id, file) => {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
 }
+
+export const searchPets = (filters) => {
+  const params = new URLSearchParams();
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== "" && value !== null && value !== undefined)
+      params.append(key, value);
+  });
+  return api.get(`/pets/search?${params.toString()}`);
+};
+
 export const deletePetImage = (petId, imageId) => api.delete(`/pets/${petId}/images/${imageId}`)

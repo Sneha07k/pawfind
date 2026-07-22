@@ -10,6 +10,11 @@ import com.pawfind.repository.NgoRepository;
 import com.pawfind.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.pawfind.dto.ngo.NearbyNgoResponse;
+import com.pawfind.entity.enums.NgoStatus;
+import com.pawfind.util.GeoUtils;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +58,18 @@ public class NgoService {
 
         Ngo saved = ngoRepository.save(ngo);
         return toResponse(saved);
+    }
+
+    public List<NearbyNgoResponse> findNearby(double lat, double lng, double radiusKm) {
+        return ngoRepository.findByStatus(NgoStatus.APPROVED).stream()
+                .filter(n -> n.getLatitude() != null && n.getLongitude() != null)
+                .map(n -> new NearbyNgoResponse(
+                        n.getId(), n.getOrganizationName(), n.getAddress(),
+                        n.getLatitude(), n.getLongitude(), n.getLogoUrl(),
+                        GeoUtils.distanceKm(lat, lng, n.getLatitude(), n.getLongitude())))
+                .filter(n -> n.getDistanceKm() <= radiusKm)
+                .sorted(Comparator.comparingDouble(NearbyNgoResponse::getDistanceKm))
+                .toList();
     }
 
     public NgoResponse getMyProfile(String email) {

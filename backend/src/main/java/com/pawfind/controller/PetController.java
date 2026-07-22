@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.pawfind.entity.enums.Gender;
+import com.pawfind.dto.pet.NearbyPetResponse;
 
 import java.util.List;
 
@@ -41,6 +43,26 @@ public class PetController {
             @PathVariable Long id) {
         petService.deletePet(principal.getUsername(), id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<PetResponse>> search(
+            @RequestParam(required = false) String species,
+            @RequestParam(required = false) String breed,
+            @RequestParam(required = false) Gender gender,
+            @RequestParam(required = false) Integer minAge,
+            @RequestParam(required = false) Integer maxAge,
+            @RequestParam(required = false) Boolean vaccinated,
+            @RequestParam(required = false) String location) {
+        return ResponseEntity.ok(petService.searchPets(species, breed, gender, minAge, maxAge, vaccinated, location));
+    }
+
+    @GetMapping("/nearby")
+    public ResponseEntity<List<NearbyPetResponse>> nearby(
+            @RequestParam double lat,
+            @RequestParam double lng,
+            @RequestParam(defaultValue = "25") double radiusKm) {
+        return ResponseEntity.ok(petService.findNearby(lat, lng, radiusKm));
     }
 
     @GetMapping

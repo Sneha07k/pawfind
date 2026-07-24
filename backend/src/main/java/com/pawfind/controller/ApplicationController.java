@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import com.pawfind.dto.application.SignatureRequest;
 
 import java.util.List;
 
@@ -60,5 +61,14 @@ public class ApplicationController {
             @PathVariable Long id,
             @RequestBody RejectApplicationRequest request) {
         return ResponseEntity.ok(applicationService.reject(principal.getUsername(), id, request.getReason()));
+    }
+
+    @PostMapping("/applications/{id}/sign")
+    public ResponseEntity<ApplicationResponse> sign(
+            @AuthenticationPrincipal CustomUserDetailsService.UserPrincipal principal,
+            @PathVariable Long id,
+            @Valid @RequestBody SignatureRequest request) {
+        return ResponseEntity
+                .ok(applicationService.signAgreement(principal.getUsername(), id, request.getSignatureDataUrl()));
     }
 }

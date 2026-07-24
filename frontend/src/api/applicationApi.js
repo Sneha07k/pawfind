@@ -9,3 +9,5 @@ export const approveApplication = (id) =>
   api.put(`/applications/${id}/approve`);
 export const rejectApplication = (id, reason) =>
   api.put(`/applications/${id}/reject`, { reason });
+export const signAgreement = (id, signatureDataUrl) =>
+  api.post(`/applications/${id}/sign`, { signatureDataUrl });

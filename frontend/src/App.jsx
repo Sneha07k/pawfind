@@ -15,6 +15,7 @@ import MyFavorites from "./pages/adopter/MyFavorites";
 import PetDetails from "./pages/public/PetDetails";
 import ApplyForAdoption from "./pages/adopter/ApplyForAdoption";
 import MyApplications from "./pages/adopter/MyApplications";
+import SignAgreement from "./pages/adopter/SignAgreement";
 import NgoApplications from "./pages/ngo/NgoApplications";
 
 function Home() {
@@ -67,6 +68,14 @@ export default function App() {
         element={
           <ProtectedRoute allowedRoles={["NGO"]}>
             <MyPets />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/applications/:id/sign"
+        element={
+          <ProtectedRoute allowedRoles={["ADOPTER"]}>
+            <SignAgreement />
           </ProtectedRoute>
         }
       />

@@ -13,6 +13,8 @@ import com.pawfind.repository.PetRepository;
 import com.pawfind.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.pawfind.dto.application.SignatureRequest;
+import java.util.Base64;
 
 import java.util.List;
 
@@ -24,6 +26,8 @@ public class ApplicationService {
     private final PetRepository petRepository;
     private final UserRepository userRepository;
     private final NgoRepository ngoRepository;
+    private final CloudinaryService cloudinaryService;
+    private final AgreementPdfService agreementPdfService;
 
     public ApplicationResponse submit(String email, Long petId, ApplicationRequest request) {
         User adopter = userRepository.findByEmail(email)
@@ -171,28 +175,64 @@ public class ApplicationService {
     }
 
     private ApplicationResponse toResponse(Application a) {
-        return ApplicationResponse.builder()
-                .id(a.getId())
-                .petId(a.getPet().getId())
-                .petName(a.getPet().getName())
-                .petImage(a.getPet().getImages().isEmpty() ? null : a.getPet().getImages().get(0).getImageUrl())
-                .ngoId(a.getPet().getNgo().getId())
-                .ngoName(a.getPet().getNgo().getOrganizationName())
-                .adopterId(a.getAdopter().getId())
-                .adopterName(a.getAdopter().getName())
-                .adopterEmail(a.getAdopter().getEmail())
-                .fullName(a.getFullName())
-                .phoneNumber(a.getPhoneNumber())
-                .address(a.getAddress())
-                .occupation(a.getOccupation())
-                .houseType(a.getHouseType())
-                .previousPetExperience(a.getPreviousPetExperience())
-                .existingPets(a.getExistingPets())
-                .reasonForAdoption(a.getReasonForAdoption())
-                .status(a.getStatus())
-                .signatureUrl(a.getSignatureUrl())
-                .agreementPdfUrl(a.getAgreementPdfUrl())
-                .applicationDate(a.getApplicationDate())
-                .build();
+            return ApplicationResponse.builder()
+                            .id(a.getId())
+                            .petId(a.getPet().getId())
+                            .petName(a.getPet().getName())
+                            .petImage(a.getPet().getImages().isEmpty() ? null
+                                            : a.getPet().getImages().get(0).getImageUrl())
+                            .ngoId(a.getPet().getNgo().getId())
+                            .ngoName(a.getPet().getNgo().getOrganizationName())
+                            .adopterId(a.getAdopter().getId())
+                            .adopterName(a.getAdopter().getName())
+                            .adopterEmail(a.getAdopter().getEmail())
+                            .fullName(a.getFullName())
+                            .phoneNumber(a.getPhoneNumber())
+                            .address(a.getAddress())
+                            .occupation(a.getOccupation())
+                            .houseType(a.getHouseType())
+                            .previousPetExperience(a.getPreviousPetExperience())
+                            .existingPets(a.getExistingPets())
+                            .reasonForAdoption(a.getReasonForAdoption())
+                            .status(a.getStatus())
+                            .signatureUrl(a.getSignatureUrl())
+                            .agreementPdfUrl(a.getAgreementPdfUrl())
+                            .applicationDate(a.getApplicationDate())
+                            .build();
+    }
+    
+    public ApplicationResponse signAgreement(String email, Long applicationId, String signatureDataUrl) {
+            User adopter = userRepository.findByEmail(email)
+                            .orElseThrow(() -> new IllegalStateException("User not found"));
+            Application application = applicationRepository.findById(applicationId)
+                            .orElseThrow(() -> new IllegalStateException("Application not found"));
+
+            if (!application.getAdopter().getId().equals(adopter.getId())) {
+                    throw new IllegalStateException("You do not have permission to sign this application");
+            }
+            if (application.getStatus() != ApplicationStatus.APPROVED) {
+                    throw new IllegalStateException(
+                                    "This application must be approved before you can sign the agreement");
+            }
+
+            byte[] signatureBytes = decodeBase64Image(signatureDataUrl);
+
+            String signatureUrl = cloudinaryService.uploadBase64Image(signatureDataUrl,
+                            "pawfind/signatures/" + applicationId);
+            application.setSignatureUrl(signatureUrl);
+
+            byte[] pdfBytes = agreementPdfService.generateAgreementPdf(application, signatureBytes);
+            String pdfUrl = cloudinaryService.uploadPdf(pdfBytes, "pawfind/agreements", "agreement-" + applicationId);
+            application.setAgreementPdfUrl(pdfUrl);
+
+            application.setStatus(ApplicationStatus.AGREEMENT_SIGNED);
+            applicationRepository.save(application);
+
+            return toResponse(application);
+    }
+
+    private byte[] decodeBase64Image(String dataUrl) {
+            String base64 = dataUrl.contains(",") ? dataUrl.split(",")[1] : dataUrl;
+            return Base64.getDecoder().decode(base64);
     }
 }

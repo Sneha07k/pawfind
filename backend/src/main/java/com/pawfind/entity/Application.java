@@ -56,6 +56,9 @@ public class Application {
     @Column(nullable = false, updatable = false)
     private LocalDateTime applicationDate;
 
+    @Column(columnDefinition = "TEXT")
+    private String rejectionReason;
+
     @PrePersist
     protected void onCreate() {
         this.applicationDate = LocalDateTime.now();

@@ -11,7 +11,11 @@ import MyPets from './pages/ngo/MyPets'
 import PetForm from './pages/ngo/PetForm'
 import BrowsePets from "./pages/public/BrowsePets";
 import NearbyMap from "./pages/public/NearbyMap";
+import MyFavorites from "./pages/adopter/MyFavorites";
 import PetDetails from "./pages/public/PetDetails";
+import ApplyForAdoption from "./pages/adopter/ApplyForAdoption";
+import MyApplications from "./pages/adopter/MyApplications";
+import NgoApplications from "./pages/ngo/NgoApplications";
 
 function Home() {
   return (
@@ -83,6 +87,38 @@ export default function App() {
         }
       />
       <Route path="/browse" element={<BrowsePets />} />
+      <Route
+        path="/favorites"
+        element={
+          <ProtectedRoute allowedRoles={["ADOPTER"]}>
+            <MyFavorites />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/pets/:petId/apply"
+        element={
+          <ProtectedRoute allowedRoles={["ADOPTER"]}>
+            <ApplyForAdoption />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/applications"
+        element={
+          <ProtectedRoute allowedRoles={["ADOPTER"]}>
+            <MyApplications />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/ngo/applications"
+        element={
+          <ProtectedRoute allowedRoles={["NGO"]}>
+            <NgoApplications />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }

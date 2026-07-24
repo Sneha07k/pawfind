@@ -3,6 +3,8 @@ import { useParams, Link } from "react-router-dom";
 import { getPetById } from "../../api/petApi";
 import { useAuth } from "../../context/AuthContext";
 import QuestionThread from "../../components/QuestionThread";
+import FavoriteButton from "../../components/FavoriteButton";
+import { useNavigate } from "react-router-dom";
 
 export default function PetDetails() {
   const { id } = useParams();
@@ -10,6 +12,7 @@ export default function PetDetails() {
   const [pet, setPet] = useState(null);
   const [activeImage, setActiveImage] = useState(0);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     getPetById(id)
@@ -83,9 +86,15 @@ export default function PetDetails() {
                   Listed by {pet.ngoName}
                 </p>
               </div>
-              <span className="text-xs bg-primary-50 text-primary-600 px-3 py-1 rounded-full whitespace-nowrap">
-                {pet.status.replace("_", " ")}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs bg-primary-50 text-primary-600 px-3 py-1 rounded-full whitespace-nowrap">
+                  {pet.status.replace("_", " ")}
+                </span>
+                <FavoriteButton
+                  petId={pet.id}
+                  className="bg-neutral-100 rounded-full w-9 h-9 flex items-center justify-center"
+                />
+              </div>
             </div>
 
             <div className="flex gap-2 mt-3">
@@ -120,10 +129,14 @@ export default function PetDetails() {
             )}
 
             {pet.status === "AVAILABLE" && (
-              <button className="mt-6 w-full bg-primary-500 text-white rounded-xl py-3 font-medium hover:bg-primary-600">
+              <button
+                onClick={() =>
+                  navigate(user ? `/pets/${pet.id}/apply` : "/login")
+                }
+                className="mt-6 w-full bg-primary-500 text-white rounded-xl py-3 font-medium hover:bg-primary-600"
+              >
                 Apply for Adoption
               </button>
-              /* wired up to the real application form in Phase 10 */
             )}
           </div>
         </div>

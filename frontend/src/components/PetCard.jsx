@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
+import FavoriteButton from "./FavoriteButton";
 
 export default function PetCard({ pet }) {
   return (
     <Link
       to={`/pets/${pet.id}`}
-      className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow block"
+      className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow block relative"
     >
-      <div className="w-full h-44 bg-neutral-100">
+      <div className="w-full h-44 bg-neutral-100 relative">
         {pet.images?.[0] ? (
           <img
             src={pet.images[0]}
@@ -18,6 +19,10 @@ export default function PetCard({ pet }) {
             No photo yet
           </div>
         )}
+        <FavoriteButton
+          petId={pet.id}
+          className="absolute top-2 right-2 bg-white/90 rounded-full w-8 h-8 flex items-center justify-center shadow-sm"
+        />
       </div>
       <div className="p-4">
         <h3 className="font-semibold">{pet.name}</h3>

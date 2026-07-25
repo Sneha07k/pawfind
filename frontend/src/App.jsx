@@ -17,19 +17,53 @@ import ApplyForAdoption from "./pages/adopter/ApplyForAdoption";
 import MyApplications from "./pages/adopter/MyApplications";
 import SignAgreement from "./pages/adopter/SignAgreement";
 import NgoApplications from "./pages/ngo/NgoApplications";
+import ShareStory from "./pages/adopter/ShareStory";
+
+import { useEffect, useState } from "react";
+import StoryCard from "./components/StoryCard";
+import { getFeaturedStories } from "./api/storyApi";
 
 function Home() {
+  const [stories, setStories] = useState([]);
+
+  useEffect(() => {
+    getFeaturedStories(6).then((res) => setStories(res.data));
+  }, []);
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-      <h1 className="text-3xl font-semibold text-primary-600">
-        PawFind — Find Your New Best Friend 🐾
-      </h1>
-      <a
-        href="/browse"
-        className="bg-primary-500 text-white px-6 py-2 rounded-xl hover:bg-primary-600"
-      >
-        Browse Pets
-      </a>
+    <div className="min-h-screen">
+      <div className="flex flex-col items-center justify-center gap-4 py-20 bg-neutral-50">
+        <h1 className="text-4xl font-semibold text-primary-600 text-center px-4">
+          Find Your New Best Friend 🐾
+        </h1>
+        <div className="flex gap-3">
+          <a
+            href="/browse"
+            className="bg-primary-500 text-white px-6 py-2 rounded-xl hover:bg-primary-600"
+          >
+            Browse Pets
+          </a>
+          <a
+            href="/map"
+            className="bg-white border px-6 py-2 rounded-xl hover:bg-neutral-50"
+          >
+            View Nearby
+          </a>
+        </div>
+      </div>
+
+      {stories.length > 0 && (
+        <div className="max-w-6xl mx-auto px-6 py-14">
+          <h2 className="text-2xl font-semibold text-primary-600 mb-6">
+            Success Stories
+          </h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {stories.map((story) => (
+              <StoryCard key={story.id} story={story} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -117,6 +151,14 @@ export default function App() {
         element={
           <ProtectedRoute allowedRoles={["ADOPTER"]}>
             <MyApplications />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/pets/:petId/share-story"
+        element={
+          <ProtectedRoute allowedRoles={["ADOPTER"]}>
+            <ShareStory />
           </ProtectedRoute>
         }
       />

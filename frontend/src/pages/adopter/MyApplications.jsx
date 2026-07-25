@@ -130,21 +130,31 @@ export default function MyApplications() {
                     <p className="text-sm text-primary-700 font-medium">
                       🎉 Adoption Complete!
                     </p>
-                    {/* debug logs removed */}
+
                     {certificates[app.id].certificateNumber && (
                       <p className="text-xs text-primary-600 mt-1">
                         Certificate No: {certificates[app.id].certificateNumber}
                       </p>
                     )}
+
                     {certificates[app.id].pdfUrl ? (
-                      <a
-                        href={certificates[app.id].pdfUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block mt-2 text-sm text-primary-600 underline"
-                      >
-                        Download Certificate
-                      </a>
+                      <>
+                        <a
+                          href={certificates[app.id].pdfUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-block mt-2 text-sm text-primary-600 underline"
+                        >
+                          Download Certificate
+                        </a>
+
+                        <Link
+                          to={`/pets/${app.petId}/share-story`}
+                          className="block text-sm text-primary-600 underline mt-2"
+                        >
+                          Share Your Success Story
+                        </Link>
+                      </>
                     ) : (
                       <p className="text-xs text-red-500 mt-2">
                         Certificate PDF URL not found.

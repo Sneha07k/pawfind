@@ -22,8 +22,16 @@ public class OtpService {
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
+    
+    private final RateLimiterService rateLimiterService;
+
     public void generateAndSend(String email, OtpPurpose purpose, String purposeLabel) {
+        if (!rateLimiterService.allow(email + ":" + purpose)) {
+            throw new IllegalStateException("Please wait a minute before requesting another OTP");
+        }
+
         String code = String.format("%06d", RANDOM.nextInt(1_000_000));
+        // ...rest of the method stays exactly the same
 
         Otp otp = Otp.builder()
                 .email(email)

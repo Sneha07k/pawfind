@@ -5,6 +5,9 @@ export const submitApplication = (petId, data) =>
 export const getMyApplications = () => api.get("/applications/mine");
 export const getApplicationById = (id) => api.get(`/applications/${id}`);
 export const getNgoApplications = () => api.get("/ngo/applications");
+export const completeAdoption = (id) => api.put(`/applications/${id}/complete`);
+export const getCertificate = (id) =>
+  api.get(`/applications/${id}/certificate`);
 export const approveApplication = (id) =>
   api.put(`/applications/${id}/approve`);
 export const rejectApplication = (id, reason) =>

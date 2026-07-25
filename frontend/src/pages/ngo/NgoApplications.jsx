@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   approveApplication,
+  completeAdoption,
   getNgoApplications,
   rejectApplication,
 } from "../../api/applicationApi";
@@ -13,7 +14,9 @@ export default function NgoApplications() {
     getNgoApplications().then((res) => setApplications(res.data));
   };
 
-  useEffect(load, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const handleApprove = async (id) => {
     if (
@@ -22,6 +25,7 @@ export default function NgoApplications() {
       )
     )
       return;
+
     await approveApplication(id);
     load();
   };
@@ -32,8 +36,23 @@ export default function NgoApplications() {
     load();
   };
 
+  const handleComplete = async (id) => {
+    if (
+      !window.confirm(
+        "Confirm the pet has been physically handed over? This will issue the adoption certificate.",
+      )
+    )
+      return;
+
+    await completeAdoption(id);
+    load();
+  };
+
   const pending = applications.filter((a) => a.status === "PENDING");
-  const others = applications.filter((a) => a.status !== "PENDING");
+  const signed = applications.filter((a) => a.status === "AGREEMENT_SIGNED");
+  const others = applications.filter(
+    (a) => a.status !== "PENDING" && a.status !== "AGREEMENT_SIGNED",
+  );
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -45,12 +64,14 @@ export default function NgoApplications() {
         <h2 className="font-medium text-neutral-700 mb-3">
           Pending Review ({pending.length})
         </h2>
+
         <div className="space-y-4 mb-10">
           {pending.length === 0 && (
             <p className="text-neutral-500 text-sm">
               Nothing waiting on you right now.
             </p>
           )}
+
           {pending.map((app) => (
             <div key={app.id} className="bg-white rounded-2xl shadow-sm p-5">
               <div className="flex justify-between items-start">
@@ -62,6 +83,7 @@ export default function NgoApplications() {
                     {app.adopterEmail} · {app.phoneNumber}
                   </p>
                 </div>
+
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleApprove(app.id)}
@@ -69,6 +91,7 @@ export default function NgoApplications() {
                   >
                     Approve
                   </button>
+
                   <button
                     onClick={() => handleReject(app.id)}
                     className="bg-red-500 text-white px-3 py-1.5 rounded-xl text-sm hover:bg-red-600"
@@ -96,17 +119,20 @@ export default function NgoApplications() {
                   <p>
                     <strong>House Type:</strong> {app.houseType}
                   </p>
+
                   {app.previousPetExperience && (
                     <p>
                       <strong>Pet Experience:</strong>{" "}
                       {app.previousPetExperience}
                     </p>
                   )}
+
                   {app.existingPets && (
                     <p>
                       <strong>Existing Pets:</strong> {app.existingPets}
                     </p>
                   )}
+
                   <p>
                     <strong>Reason for Adoption:</strong>{" "}
                     {app.reasonForAdoption}
@@ -117,7 +143,55 @@ export default function NgoApplications() {
           ))}
         </div>
 
+        <h2 className="font-medium text-neutral-700 mb-3">
+          Ready for Handover ({signed.length})
+        </h2>
+
+        <div className="space-y-4 mb-10">
+          {signed.length === 0 && (
+            <p className="text-neutral-500 text-sm">
+              No agreements awaiting handover.
+            </p>
+          )}
+
+          {signed.map((app) => (
+            <div
+              key={app.id}
+              className="bg-white rounded-2xl shadow-sm p-5 flex justify-between items-center"
+            >
+              <div>
+                <h3 className="font-semibold">
+                  {app.fullName} → {app.petName}
+                </h3>
+
+                <p className="text-sm text-neutral-500">
+                  Agreement signed — ready to hand over the pet
+                </p>
+
+                {app.agreementPdfUrl && (
+                  <a
+                    href={app.agreementPdfUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-primary-600 underline"
+                  >
+                    View Signed Agreement
+                  </a>
+                )}
+              </div>
+
+              <button
+                onClick={() => handleComplete(app.id)}
+                className="bg-primary-500 text-white px-4 py-1.5 rounded-xl text-sm hover:bg-primary-600"
+              >
+                Mark as Completed
+              </button>
+            </div>
+          ))}
+        </div>
+
         <h2 className="font-medium text-neutral-700 mb-3">History</h2>
+
         <div className="space-y-2">
           {others.map((app) => (
             <div
@@ -127,8 +201,9 @@ export default function NgoApplications() {
               <span>
                 {app.fullName} → {app.petName}
               </span>
+
               <span className="text-xs px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-600">
-                {app.status}
+                {app.status.replaceAll("_", " ")}
               </span>
             </div>
           ))}

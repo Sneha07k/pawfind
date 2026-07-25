@@ -39,7 +39,8 @@ public class CloudinaryService {
             Map<?, ?> result = cloudinary.uploader().upload(pdfBytes, ObjectUtils.asMap(
                     "folder", folder,
                     "public_id", publicId,
-                    "resource_type", "raw"));
+                    "resource_type", "raw",
+                    "format", "pdf"));
             return (String) result.get("secure_url");
         } catch (IOException e) {
             throw new IllegalStateException("PDF upload failed: " + e.getMessage());

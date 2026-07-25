@@ -67,6 +67,7 @@ public class SecurityConfig {
                         .authenticated()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/pets/*/applications")
                         .authenticated()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/ngo/approved").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/questions/*/answer")
                         .hasRole("NGO")
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/pets/mine").hasRole("NGO")

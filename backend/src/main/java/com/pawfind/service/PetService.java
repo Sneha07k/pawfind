@@ -194,4 +194,21 @@ public class PetService {
                 .createdAt(pet.getCreatedAt())
                 .build();
     }
+    
+    // public long countPetsForNgo(String email) {
+    //     var ngo = getNgoForUser(email);
+    //     return petRepository.findAll().stream()
+    //             .filter(p -> p.getNgo().getId().equals(ngo.getId()))
+    //             .count();
+    // }
+    public List<PetResponse> listFeatured(int limit) {
+        return listAvailablePets().stream()
+                .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
+                .limit(limit)
+                .toList();
+    }
+    
+    public long countPetsForNgo(String email) {
+        return listMyPets(email).size();
+    }
 }

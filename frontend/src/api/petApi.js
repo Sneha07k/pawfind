@@ -14,6 +14,9 @@ export const uploadPetImage = (id, file) => {
   })
 }
 
+export const getFeaturedPets = (limit = 8) =>
+  api.get(`/pets/featured?limit=${limit}`);
+
 export const searchPets = (filters) => {
   const params = new URLSearchParams();
   Object.entries(filters).forEach(([key, value]) => {

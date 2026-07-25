@@ -39,4 +39,9 @@ public class NgoController {
             @RequestParam(defaultValue = "25") double radiusKm) {
         return ResponseEntity.ok(ngoService.findNearby(lat, lng, radiusKm));
     }
+
+    @GetMapping("/approved")
+    public ResponseEntity<List<NgoResponse>> approved(@RequestParam(defaultValue = "8") int limit) {
+        return ResponseEntity.ok(ngoService.listApproved(limit));
+    }
 }

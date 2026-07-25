@@ -140,7 +140,7 @@ export default function BrowsePets() {
             No pets match your search right now — try widening your filters.
           </p>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
             {pets.map((pet) => (
               <PetCard key={pet.id} pet={pet} />
             ))}

@@ -6,7 +6,11 @@ import com.pawfind.entity.enums.NgoStatus;
 import com.pawfind.repository.NgoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import com.pawfind.dto.admin.UserSummaryResponse;
+import com.pawfind.entity.User;
+import com.pawfind.entity.enums.Role;
+import com.pawfind.repository.PetRepository;
+import com.pawfind.repository.UserRepository;
 import java.util.List;
 
 @Service
@@ -14,6 +18,8 @@ import java.util.List;
 public class AdminService {
 
     private final NgoRepository ngoRepository;
+    private final UserRepository userRepository;
+    private final PetRepository petRepository;
 
     public List<NgoResponse> listNgosByStatus(NgoStatus status) {
         return ngoRepository.findByStatus(status).stream().map(this::toResponse).toList();
@@ -36,6 +42,31 @@ public class AdminService {
     private Ngo getNgo(Long id) {
         return ngoRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("NGO not found"));
+    }
+
+    public List<UserSummaryResponse> listAllUsers() {
+        return userRepository.findAll().stream()
+                .map(u -> UserSummaryResponse.builder()
+                        .id(u.getId()).name(u.getName()).email(u.getEmail())
+                        .role(u.getRole()).verified(u.isVerified()).createdAt(u.getCreatedAt())
+                        .build())
+                .toList();
+    }
+
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+        if (user.getRole() == Role.ADMIN) {
+            throw new IllegalStateException("Admin accounts cannot be deleted through this action");
+        }
+        userRepository.delete(user);
+    }
+
+    public void removePetListing(Long petId) {
+        if (!petRepository.existsById(petId)) {
+            throw new IllegalStateException("Pet not found");
+        }
+        petRepository.deleteById(petId);
     }
 
     private NgoResponse toResponse(Ngo ngo) {

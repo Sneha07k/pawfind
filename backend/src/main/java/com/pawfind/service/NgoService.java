@@ -71,6 +71,13 @@ public class NgoService {
                 .sorted(Comparator.comparingDouble(NearbyNgoResponse::getDistanceKm))
                 .toList();
     }
+    
+    public List<NgoResponse> listApproved(int limit) {
+        return ngoRepository.findByStatus(NgoStatus.APPROVED).stream()
+                .limit(limit)
+                .map(this::toResponse)
+                .toList();
+    }
 
     public NgoResponse getMyProfile(String email) {
         User user = userRepository.findByEmail(email)

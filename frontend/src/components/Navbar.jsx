@@ -45,6 +45,13 @@ export default function Navbar() {
               Nearby
             </Link>
 
+            <Link
+              to="/stories"
+              className="text-neutral-600 hover:text-primary-600"
+            >
+              Success Stories
+            </Link>
+
             {user ? (
               <>
                 {dashboardLink && (
@@ -125,6 +132,13 @@ export default function Navbar() {
               className="text-neutral-600"
             >
               Nearby
+            </Link>
+            <Link
+              to="/stories"
+              onClick={() => setMenuOpen(false)}
+              className="text-neutral-600"
+            >
+              Success Stories
             </Link>
             {user ? (
               <>

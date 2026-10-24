@@ -90,6 +90,14 @@ public class PetService {
                 .toList();
     }
 
+    public List<PetResponse> listAvailableByNgo(Long ngoId) {
+        return petRepository.findAll().stream()
+                .filter(p -> p.getNgo().getId().equals(ngoId))
+                .filter(p -> p.getStatus() == PetStatus.AVAILABLE)
+                .map(this::toResponse)
+                .toList();
+    }
+    
     public List<PetResponse> listMyPets(String email) {
         Ngo ngo = getNgoForUser(email);
         return petRepository.findAll().stream()

@@ -8,29 +8,35 @@ export default function ShareStory() {
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
   const [error, setError] = useState("");
-  const [storyId, setStoryId] = useState(null);
-  const [imageUrl, setImageUrl] = useState(null);
-  const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  };
+
+  const clearPhoto = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+  };
 
   const onSubmit = async (data) => {
     setError("");
+    setSubmitting(true);
     try {
       const res = await createStory(petId, data);
-      setStoryId(res.data.id);
+      if (selectedFile) {
+        await uploadStoryImage(res.data.id, selectedFile);
+      }
+      navigate("/stories");
     } catch (err) {
       setError(err.response?.data?.error || "Could not share your story.");
-    }
-  };
-
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file || !storyId) return;
-    setUploading(true);
-    try {
-      const res = await uploadStoryImage(storyId, file);
-      setImageUrl(res.data.imageUrl);
     } finally {
-      setUploading(false);
+      setSubmitting(false);
     }
   };
 
@@ -47,59 +53,67 @@ export default function ShareStory() {
 
         {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
-        {!storyId ? (
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-            <div>
-              <label className="block mb-1 text-sm font-medium">Title</label>
-              <input
-                {...register("title", { required: true })}
-                className="w-full border rounded-xl px-3 py-2"
-                placeholder="e.g. Max found his forever home!"
-              />
-            </div>
-            <div>
-              <label className="block mb-1 text-sm font-medium">
-                Your Story
-              </label>
-              <textarea
-                {...register("description", { required: true })}
-                rows={5}
-                className="w-full border rounded-xl px-3 py-2"
-                placeholder="Tell us how it's going..."
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-primary-500 text-white rounded-xl py-2.5 hover:bg-primary-600"
-            >
-              Continue
-            </button>
-          </form>
-        ) : (
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <p className="text-primary-600 text-sm mb-3">
-              Story saved! Add a photo to bring it to life (optional).
-            </p>
-            {imageUrl && (
-              <img
-                src={imageUrl}
-                className="w-full h-48 object-cover rounded-xl mb-3"
-              />
-            )}
+            <label className="block mb-1 text-sm font-medium">Title</label>
             <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              disabled={uploading}
+              {...register("title", { required: true })}
+              className="w-full border rounded-xl px-3 py-2"
+              placeholder="e.g. Max found his forever home!"
             />
-            <button
-              onClick={() => navigate("/")}
-              className="block mt-4 text-sm text-primary-600"
-            >
-              Done — view on homepage
-            </button>
           </div>
-        )}
+
+          <div>
+            <label className="block mb-1 text-sm font-medium">Your Story</label>
+            <textarea
+              {...register("description", { required: true })}
+              rows={5}
+              className="w-full border rounded-xl px-3 py-2"
+              placeholder="Tell us how it's going..."
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 text-sm font-medium">Photo</label>
+            {previewUrl ? (
+              <div className="relative">
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="w-full h-48 object-cover rounded-xl"
+                />
+                <button
+                  type="button"
+                  onClick={clearPhoto}
+                  className="absolute top-2 right-2 bg-white/90 rounded-full w-7 h-7 text-sm shadow-sm hover:bg-white"
+                  aria-label="Remove photo"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <label className="flex flex-col items-center justify-center border-2 border-dashed rounded-xl h-32 cursor-pointer text-neutral-400 hover:border-primary-400 hover:text-primary-500 transition-colors">
+                <span className="text-sm">
+                  Click to add a photo of your pet (optional)
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+              </label>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full bg-primary-500 text-white rounded-xl py-2.5 hover:bg-primary-600 disabled:opacity-50"
+          >
+            {submitting ? "Sharing..." : "Share Story"}
+          </button>
+        </form>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import com.pawfind.dto.ngo.NgoProfileRequest;
 import com.pawfind.dto.ngo.NgoResponse;
 import com.pawfind.security.CustomUserDetailsService;
 import com.pawfind.service.NgoService;
+import com.pawfind.dto.ngo.PublicNgoProfileResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,11 @@ public class NgoController {
         return ResponseEntity.ok(ngoService.createOrUpdateProfile(principal.getUsername(), request));
     }
 
+    @GetMapping("/{id}/public")
+    public ResponseEntity<PublicNgoProfileResponse> publicProfile(@PathVariable Long id) {
+        return ResponseEntity.ok(ngoService.getPublicProfile(id));
+    }
+    
     @GetMapping("/profile")
     public ResponseEntity<NgoResponse> getMyProfile(
             @AuthenticationPrincipal CustomUserDetailsService.UserPrincipal principal) {

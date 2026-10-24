@@ -97,7 +97,12 @@ public class PetController {
         petService.deleteImage(principal.getUsername(), id, imageId);
         return ResponseEntity.noContent().build();
     }
-
+    
+    @GetMapping("/by-ngo/{ngoId}")
+    public ResponseEntity<List<PetResponse>> byNgo(@PathVariable Long ngoId) {
+        return ResponseEntity.ok(petService.listAvailableByNgo(ngoId));
+    }
+    
     @GetMapping("/featured")
     public ResponseEntity<List<PetResponse>> featured(@RequestParam(defaultValue = "8") int limit) {
         return ResponseEntity.ok(petService.listFeatured(limit));

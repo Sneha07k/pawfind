@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.pawfind.dto.ngo.NearbyNgoResponse;
 import com.pawfind.entity.enums.NgoStatus;
+import com.pawfind.dto.ngo.PublicNgoProfileResponse;
+import com.pawfind.repository.PetRepository;
 import com.pawfind.util.GeoUtils;
 import java.util.Comparator;
 import java.util.List;
@@ -22,6 +24,7 @@ public class NgoService {
 
     private final NgoRepository ngoRepository;
     private final UserRepository userRepository;
+    private final PetRepository petRepository;
 
     public NgoResponse createOrUpdateProfile(String email, NgoProfileRequest request) {
         User user = userRepository.findByEmail(email)
@@ -58,6 +61,29 @@ public class NgoService {
 
         Ngo saved = ngoRepository.save(ngo);
         return toResponse(saved);
+    }
+
+    public PublicNgoProfileResponse getPublicProfile(Long ngoId) {
+        Ngo ngo = ngoRepository.findById(ngoId)
+                .orElseThrow(() -> new IllegalStateException("Organization not found"));
+
+        if (ngo.getStatus() != NgoStatus.APPROVED) {
+            throw new IllegalStateException("This organization is not available");
+        }
+
+        long petCount = petRepository.findAll().stream()
+                .filter(p -> p.getNgo().getId().equals(ngo.getId()))
+                .count();
+
+        return PublicNgoProfileResponse.builder()
+                .id(ngo.getId())
+                .organizationName(ngo.getOrganizationName())
+                .address(ngo.getAddress())
+                .latitude(ngo.getLatitude())
+                .longitude(ngo.getLongitude())
+                .logoUrl(ngo.getLogoUrl())
+                .totalPetsListed(petCount)
+                .build();
     }
 
     public List<NearbyNgoResponse> findNearby(double lat, double lng, double radiusKm) {

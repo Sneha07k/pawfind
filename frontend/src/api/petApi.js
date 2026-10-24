@@ -13,6 +13,7 @@ export const uploadPetImage = (id, file) => {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
 }
+export const getPetsByNgo = (ngoId) => api.get(`/pets/by-ngo/${ngoId}`);
 
 export const getFeaturedPets = (limit = 8) =>
   api.get(`/pets/featured?limit=${limit}`);

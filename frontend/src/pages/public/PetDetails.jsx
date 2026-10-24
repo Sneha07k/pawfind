@@ -47,13 +47,32 @@ export default function PetDetails() {
         </Link>
 
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden mt-4">
-          <div className="w-full h-80 bg-neutral-100">
+          <div className="w-full h-80 sm:h-96 bg-gradient-to-br from-orange-50 via-amber-50 to-pink-50 flex items-center justify-center overflow-hidden relative">
             {pet.images?.length > 0 ? (
-              <img
-                src={pet.images[activeImage]}
-                alt={pet.name}
-                className="w-full h-full object-cover"
-              />
+              <div
+                onClick={() => {
+                  if (pet.images.length > 1) {
+                    setActiveImage((prev) => (prev + 1) % pet.images.length);
+                  }
+                }}
+                className={`bg-white rounded-3xl p-3 shadow-2xl rotate-[-2deg] hover:rotate-0 transition-all duration-300 ${pet.images.length > 1 ? "cursor-pointer" : ""}`}
+              >
+                <img
+                  src={pet.images[activeImage]}
+                  alt={pet.name}
+                  className="max-h-72 sm:max-h-80 max-w-full object-contain rounded-2xl"
+                />
+                {pet.images.length > 1 && (
+                  <div className="flex justify-center gap-1.5 mt-2">
+                    {pet.images.map((_, i) => (
+                      <span
+                        key={i}
+                        className={`w-1.5 h-1.5 rounded-full transition-colors ${i === activeImage ? "bg-primary-500" : "bg-neutral-200"}`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
             ) : (
               <div className="w-full h-full flex items-center justify-center text-neutral-400">
                 No photos yet
@@ -138,6 +157,12 @@ export default function PetDetails() {
                 Apply for Adoption
               </button>
             )}
+            <Link
+              to={`/ngo/${pet.ngoId}`}
+              className="text-sm text-primary-600 hover:underline mt-1 inline-block"
+            >
+              Listed by {pet.ngoName}
+            </Link>
           </div>
         </div>
 

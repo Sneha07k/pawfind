@@ -39,24 +39,31 @@ export default function PetForm() {
   }
 
   const handleImageUpload = async (e) => {
-    const file = e.target.files[0]
-    if (!file || !petId) return
-    setUploading(true)
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0 || !petId) return;
+
+    setUploading(true);
+    setError("");
     try {
-      const res = await uploadPetImage(petId, file)
-      setImages(res.data.images)
+      // Uploaded one at a time since the backend endpoint accepts a single file per call —
+      // each response returns the pet's full updated image list, so we just keep the latest.
+      for (const file of files) {
+        const res = await uploadPetImage(petId, file);
+        setImages(res.data.images);
+      }
     } catch (err) {
-      setError(err.response?.data?.error || 'Image upload failed.')
+      setError(err.response?.data?.error || "Some images failed to upload.");
     } finally {
-      setUploading(false)
+      setUploading(false);
+      e.target.value = ""; // reset input so selecting the same file(s) again still fires onChange
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-neutral-50 py-10 px-4">
       <div className="bg-white shadow-md rounded-2xl p-8 max-w-xl mx-auto">
         <h1 className="text-2xl font-semibold text-primary-600 mb-6">
-          {isEdit ? 'Edit Pet' : 'Add a New Pet'}
+          {isEdit ? "Edit Pet" : "Add a New Pet"}
         </h1>
 
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
@@ -64,66 +71,108 @@ export default function PetForm() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
           <div>
             <label className="block mb-1 text-sm font-medium">Name</label>
-            <input {...register('name', { required: true })} className="w-full border rounded-xl px-3 py-2" />
+            <input
+              {...register("name", { required: true })}
+              className="w-full border rounded-xl px-3 py-2"
+            />
           </div>
 
           <div>
             <label className="block mb-1 text-sm font-medium">Species</label>
-            <input {...register('species', { required: true })} className="w-full border rounded-xl px-3 py-2" placeholder="Dog, Cat, ..." />
+            <input
+              {...register("species", { required: true })}
+              className="w-full border rounded-xl px-3 py-2"
+              placeholder="Dog, Cat, ..."
+            />
           </div>
 
           <div>
             <label className="block mb-1 text-sm font-medium">Breed</label>
-            <input {...register('breed')} className="w-full border rounded-xl px-3 py-2" />
+            <input
+              {...register("breed")}
+              className="w-full border rounded-xl px-3 py-2"
+            />
           </div>
 
           <div className="flex gap-3">
             <div className="flex-1">
               <label className="block mb-1 text-sm font-medium">Gender</label>
-              <select {...register('gender')} className="w-full border rounded-xl px-3 py-2">
+              <select
+                {...register("gender")}
+                className="w-full border rounded-xl px-3 py-2"
+              >
                 <option value="MALE">Male</option>
                 <option value="FEMALE">Female</option>
                 <option value="UNKNOWN">Unknown</option>
               </select>
             </div>
             <div className="flex-1">
-              <label className="block mb-1 text-sm font-medium">Age (months)</label>
-              <input type="number" {...register('age')} className="w-full border rounded-xl px-3 py-2" />
+              <label className="block mb-1 text-sm font-medium">
+                Age (months)
+              </label>
+              <input
+                type="number"
+                {...register("age")}
+                className="w-full border rounded-xl px-3 py-2"
+              />
             </div>
           </div>
 
           <div className="flex gap-6">
             <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" {...register('vaccinated')} /> Vaccinated
+              <input type="checkbox" {...register("vaccinated")} /> Vaccinated
             </label>
             <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" {...register('sterilized')} /> Sterilized
+              <input type="checkbox" {...register("sterilized")} /> Sterilized
             </label>
           </div>
 
           <div>
-            <label className="block mb-1 text-sm font-medium">Health Information</label>
-            <textarea {...register('healthInfo')} className="w-full border rounded-xl px-3 py-2" rows={2} />
+            <label className="block mb-1 text-sm font-medium">
+              Health Information
+            </label>
+            <textarea
+              {...register("healthInfo")}
+              className="w-full border rounded-xl px-3 py-2"
+              rows={2}
+            />
           </div>
 
           <div>
-            <label className="block mb-1 text-sm font-medium">Story / Background</label>
-            <textarea {...register('story')} className="w-full border rounded-xl px-3 py-2" rows={3} />
+            <label className="block mb-1 text-sm font-medium">
+              Story / Background
+            </label>
+            <textarea
+              {...register("story")}
+              className="w-full border rounded-xl px-3 py-2"
+              rows={3}
+            />
           </div>
 
           <div className="flex gap-3">
             <div className="flex-1">
               <label className="block mb-1 text-sm font-medium">Latitude</label>
-              <input {...register('latitude')} className="w-full border rounded-xl px-3 py-2" />
+              <input
+                {...register("latitude")}
+                className="w-full border rounded-xl px-3 py-2"
+              />
             </div>
             <div className="flex-1">
-              <label className="block mb-1 text-sm font-medium">Longitude</label>
-              <input {...register('longitude')} className="w-full border rounded-xl px-3 py-2" />
+              <label className="block mb-1 text-sm font-medium">
+                Longitude
+              </label>
+              <input
+                {...register("longitude")}
+                className="w-full border rounded-xl px-3 py-2"
+              />
             </div>
           </div>
 
-          <button type="submit" className="w-full bg-primary-500 text-white rounded-xl py-2 mt-2 hover:bg-primary-600">
-            {isEdit ? 'Save Changes' : 'Create Pet'}
+          <button
+            type="submit"
+            className="w-full bg-primary-500 text-white rounded-xl py-2 mt-2 hover:bg-primary-600"
+          >
+            {isEdit ? "Save Changes" : "Create Pet"}
           </button>
         </form>
 
@@ -132,12 +181,26 @@ export default function PetForm() {
             <h2 className="font-medium mb-2">Photos</h2>
             <div className="flex flex-wrap gap-3 mb-3">
               {images.map((url) => (
-                <img key={url} src={url} alt="pet" className="w-24 h-24 object-cover rounded-xl" />
+                <img
+                  key={url}
+                  src={url}
+                  alt="pet"
+                  className="w-24 h-24 object-cover rounded-xl"
+                />
               ))}
             </div>
-            <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageUpload}
+              disabled={uploading}
+            />
             {!isEdit && (
-              <button onClick={() => navigate('/ngo/pets')} className="block mt-4 text-sm text-primary-600">
+              <button
+                onClick={() => navigate("/ngo/pets")}
+                className="block mt-4 text-sm text-primary-600"
+              >
                 Done — back to my pets
               </button>
             )}
@@ -145,5 +208,5 @@ export default function PetForm() {
         )}
       </div>
     </div>
-  )
+  );
 }

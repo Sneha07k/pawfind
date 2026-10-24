@@ -128,9 +128,15 @@ export default function NearbyMap() {
                       {ngo.organizationName}
                     </p>
                     <p className="text-xs text-neutral-500">{ngo.address}</p>
-                    <p className="text-xs text-neutral-500">
+                    <p className="text-xs text-neutral-500 mb-2">
                       {ngo.distanceKm.toFixed(1)} km away
                     </p>
+                    <Link
+                      to={`/ngo/${ngo.id}`}
+                      className="text-xs text-primary-600 font-medium"
+                    >
+                      View Shelter →
+                    </Link>
                   </div>
                 </Popup>
               </Marker>

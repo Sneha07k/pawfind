@@ -1,23 +1,45 @@
 # Node and frontend build artifacts
 node_modules/
 dist/
+coverage/
 
 # Java/Maven build artifacts
 target/
 .mvn/
-*.iml
+*.class
+
+# IDE / editor
 .idea/
+*.iml
+.vscode/
+*.swp
 
-# Environment files
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment files (real secrets) - templates are kept
 .env
-.env.local
-.env.*.local
+.env.*
 *.env
-*.env.*
+!.env.example
 
-# Local docker compose overrides and secret env files
+# Local Spring config with real credentials
+backend/src/main/resources/application.yml
+backend/src/main/resources/application-local.yml
+backend/src/main/resources/application-dev.yml
+
+# Keys and certificates
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+
+# Local docker compose overrides
 docker-compose.override.yml
-.docker-compose.override.yml
 
 # Logs
 *.log
+logs/

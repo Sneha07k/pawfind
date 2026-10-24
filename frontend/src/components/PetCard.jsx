@@ -17,12 +17,12 @@ export default function PetCard({ pet }) {
       to={`/pets/${pet.id}`}
       className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow block relative"
     >
-      <div className="w-full h-44 bg-neutral-100 relative">
+      <div className="w-full aspect-[4/3] bg-neutral-100 relative">
         {images.length > 0 ? (
           <img
             src={images[activeImage]}
             alt={pet.name}
-            className="w-full h-full object-cover object-top"
+            className="w-full h-full object-cover object-center"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-neutral-400 text-sm">
@@ -48,8 +48,8 @@ export default function PetCard({ pet }) {
           </div>
         )}
       </div>
-      <div className="p-4">
-        <h3 className="font-semibold">{pet.name}</h3>
+      <div className="p-5">
+        <h3 className="font-semibold text-lg">{pet.name}</h3>
         <p className="text-sm text-neutral-500">
           {pet.breed || pet.species} · {pet.gender?.toLowerCase()}
         </p>

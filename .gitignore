@@ -19,11 +19,10 @@ target/
 Thumbs.db
 desktop.ini
 
-# Environment files (real secrets) - templates are kept
+# Environment files
 .env
 .env.*
 *.env
-!.env.example
 
 # Local Spring config with real credentials
 backend/src/main/resources/application-local.yml
@@ -36,8 +35,9 @@ backend/src/main/resources/application-dev.yml
 *.jks
 *.keystore
 
-# Local docker compose overrides
-docker-compose.override.yml
+# Docker / Caddy
+docker-compose*.yml
+Caddyfile
 
 # Logs
 *.log

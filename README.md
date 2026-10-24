@@ -75,7 +75,6 @@ pawfind/
 │       ├── components/      shared UI
 │       ├── context/         auth context
 │       └── pages/           public, adopter, ngo, admin pages
-└── docker-compose*.yml      optional self-hosted setup (MySQL + API + nginx + Caddy)
 ```
 
 ## Running Locally

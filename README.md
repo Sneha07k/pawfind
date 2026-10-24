@@ -83,7 +83,7 @@ pawfind/
 
 ### Backend
 
-1. Create `backend/src/main/resources/application-local.yml` (gitignored — never commit it) with your values:
+1. Create `backend/src/main/resources/application-local.yml` :
 
    ```yaml
    spring:
